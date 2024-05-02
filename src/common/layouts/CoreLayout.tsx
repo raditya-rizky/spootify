@@ -3,12 +3,12 @@ import Header from '../components/Header';
 import SideBar from '../components/SideBar';
 import Player from '../components/Player';
 
-function CoreLayout({ children , history }) {
+export function CoreLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="main">
       <SideBar />
       <div className="main__content">
-        <Header history={history} />
+        <Header />
         <div className="main__content__child">
           {children}
         </div>
