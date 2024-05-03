@@ -2,65 +2,37 @@ import React from 'react';
 import DiscoverBlock from './DiscoverBlock/components/DiscoverBlock';
 import '../styles/_discover.scss';
 import { useQuery } from '@tanstack/react-query';
-import { API } from '../../../config';
+import { getData } from '../../api/fetchData';
 
 export function Discover() {
-  async function signIn() {
-    let data;
-
-    const formData = new URLSearchParams();
-    formData.append('grant_type', 'client_credentials');
-
-    const signed = await fetch(
-      API.authUrl,
-      {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${btoa(`${API.clientId}:${API.clientSecret}`)}`
-        },
-        body: formData
-      }
-    );
-
-    data = await signed.json();
-
-    if (!data || !data.access_token) {
-      throw new Error("Access token not received");
-    }
-
-    const releases = await fetch(
-      `${API.baseUrl}/browse/new-releases?locale=en_US`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${data.access_token}`
-        }
-      }
-    );
-
-    if (!releases.ok) {
-      throw new Error("Failed to fetch new releases");
-    }
-
-    const releasesData = await releases.json();
-
-    return releasesData.albums.items;
-  }
-
-
-  const { data: newReleases } = useQuery({
+  const { data: newReleases, isLoading: newReleasesLoading } = useQuery({
     queryKey: ["new-releases"],
-    queryFn: () => signIn()
+    queryFn: async () => await getData('new-releases', 'albums'),
   })
 
-  console.log(newReleases);
+  const { data: playlists, isLoading: playlistsLoading } = useQuery({
+    queryKey: ["playlists"],
+    queryFn: async () => await getData('featured-playlists', 'playlists'),
+  })
+
+  const { data: categories, isLoading: categoriesLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => await getData('categories', 'categories'),
+  })
+
 
   return (
     <div className="discover">
-      <DiscoverBlock text="RELEASED THIS WEEK" id="released" data={newReleases} />
-      <DiscoverBlock text="FEATURED PLAYLISTS" id="featured" data={[]} />
-      <DiscoverBlock text="BROWSE" id="browse" data={[]} imagesKey="icons" />
+      {
+        (newReleasesLoading || playlistsLoading || categoriesLoading) &&
+          (newReleasesLoading !== false || playlistsLoading !== false || categoriesLoading !== false) ?
+          <h2>LOADING...</h2> :
+          <>
+            <DiscoverBlock text="RELEASED THIS WEEK" id="released" data={newReleases} />
+            <DiscoverBlock text="FEATURED PLAYLISTS" id="featured" data={playlists} />
+            <DiscoverBlock text="BROWSE" id="browse" data={categories} imagesKey="icons" />
+          </>
+      }
     </div>
   )
 }

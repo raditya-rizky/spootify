@@ -26,7 +26,7 @@ export default function SideBar() {
     <div className="sidebar">
       <div className="sidebar__profile">
         <Avatar />
-        <p>Bob Smith</p>
+        <p>Raditya Rizky</p>
       </div>
       <div className="sidebar__options">
         {renderSideBarOption('/', faHeadphonesAlt, 'Discover', { selected: true })}
