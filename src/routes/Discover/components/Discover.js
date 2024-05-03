@@ -7,25 +7,24 @@ import { getData } from '../../api/fetchData';
 export function Discover() {
   const { data: newReleases, isLoading: newReleasesLoading } = useQuery({
     queryKey: ["new-releases"],
-    queryFn: async () => await getData('new-releases', 'albums'),
+    queryFn: () => getData('new-releases', 'albums'),
   })
 
   const { data: playlists, isLoading: playlistsLoading } = useQuery({
     queryKey: ["playlists"],
-    queryFn: async () => await getData('featured-playlists', 'playlists'),
+    queryFn: () => getData('featured-playlists', 'playlists'),
   })
 
   const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ["categories"],
-    queryFn: async () => await getData('categories', 'categories'),
+    queryFn: () => getData('categories', 'categories'),
   })
 
 
   return (
     <div className="discover">
       {
-        (newReleasesLoading || playlistsLoading || categoriesLoading) &&
-          (newReleasesLoading !== false || playlistsLoading !== false || categoriesLoading !== false) ?
+        (newReleasesLoading || playlistsLoading || categoriesLoading) ?
           <h2>LOADING...</h2> :
           <>
             <DiscoverBlock text="RELEASED THIS WEEK" id="released" data={newReleases} />
